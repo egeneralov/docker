@@ -1,2 +1,23 @@
 ---
 # defaults file for egeneralov.docker
+
+download_url: "https://download.docker.com/linux/{{ ansible_distribution | lower }}"
+
+registry: []
+#   - {
+#     'url': 'registry-1.docker.io'
+#     'username': 'egeneralov'
+#     'password': 'egeneralov'
+#   }
+
+dns: []
+#   - 8.8.8.8
+#   - 1.1.1.1
+
+max_concurrent_downloads: 5
+max_concurrent_uploads: 5
+
+insecure_registries: []
+#  - registry.company.tld
+
+log_opts: {}

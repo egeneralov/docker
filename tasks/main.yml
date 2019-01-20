@@ -1,2 +1,83 @@
 ---
 # tasks file for egeneralov.docker
+
+
+- name: System-wide deps
+  apt:
+    name: ['ca-certificates', 'apt-transport-https', 'debian-archive-keyring', 'python-pip']
+    update_cache: yes
+    cache_valid_time: 3600
+  register: task_result
+  until: task_result is success
+  retries: 10
+  delay: 2
+
+
+- name: import key
+  apt_key:
+    url: "{{ download_url }}/gpg"
+  register: key
+  until: key is success
+  retries: 10
+  delay: 2
+
+
+- name: import repo
+  apt_repository:
+    repo: "deb [arch=amd64] {{ download_url }} {{ ansible_distribution_release | lower }} stable"
+    filename: docker
+  register: repo
+  until: repo is success
+  retries: 10
+  delay: 2
+
+
+- name: "update_cache"
+  apt:
+    update_cache: yes
+    cache_valid_time: 3600
+  register: task_result
+  until: task_result is success
+  retries: 10
+  delay: 2
+  when: key is changed or repo is changed
+
+
+- name: "apt-get install -yq docker-ce"
+  apt:
+    name: docker-ce
+  register: task_result
+  until: task_result is success
+  retries: 10
+  delay: 2
+
+
+- name: install python library
+  pip:
+    name: docker[tls]
+  register: task_result
+  until: task_result is success
+  retries: 10
+  delay: 2
+
+
+- name: daemon.json
+  template:
+    src: daemon.json.j2
+    dest: /etc/docker/daemon.json
+  register: daemon
+
+
+- name: restart docker if daemon.json is changed
+  systemd:
+    name: docker.service
+    state: restarted
+  when: daemon is changed
+
+
+- name: Log in into registry
+  docker_login:
+    registry: "{{ item.registry }}"
+    username: "{{ item.username }}"
+    password: "{{ item.password }}"
+  with_items: "{{ registry }}"

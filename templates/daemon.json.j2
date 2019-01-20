@@ -1,0 +1,15 @@
+{
+	"dns": {{ dns | to_json }},
+	"dns-opts": [],
+	"dns-search": [],
+	"experimental": false,
+	"storage-driver": "overlay2",
+	"storage-opts": [],
+	"live-restore": false,
+	"log-driver": "journald",
+	"log-opts": {{ log_opts | to_json }},
+	"max-concurrent-downloads": {{ max_concurrent_downloads }},
+	"max-concurrent-uploads": {{ max_concurrent_uploads }},
+	"ipv6": false,
+	"insecure-registries": {{ insecure_registries | to_json }}
+}
