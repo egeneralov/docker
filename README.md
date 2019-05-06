@@ -1,5 +1,5 @@
 egeneralov.docker
-=========
+=================
 
 Docker daemon provision with configuration.
 
@@ -11,17 +11,22 @@ Requirements
 Role Variables
 --------------
 
-- download_url, string, base url for download.docker.com
-- registry, list with map
-  - url, string, registry host
-  - username, string
-  - password, string
-- dns, list, with ip strings
-- max_concurrent_downloads, int, max concurent streams for pulling images
-- max_concurrent_uploads, int, max concurent streams for pushing images
-- insecure_registries, list, with strings of insecure registry hosts
-- log_opts, map, options for daemon.json
+See `defaults/main.yml`.
 
+- **docker_download_url**: `https://download.docker.com/linux/{{ ansible_distribution | lower }}`
+- **docker_release_channel**: `stable` (edge / stable)
+- **docker_type**: `ce` (ce / ee)
+- **docker_version**: `present`
+  - present
+  - 18.06.3~ce~3-0~debian
+  - latest
+
+- **docker_registry**: `[]`
+  - **url**: `registry-1.docker.io` (optional, default - hub.docker.com)
+    **username**: `egeneralov` (username)
+    **password**: `egeneralov` (password)
+
+- **docker_daemon_json**: `{}` (map for daemon.json)
 
 License
 -------

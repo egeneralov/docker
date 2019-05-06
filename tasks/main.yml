@@ -4,9 +4,18 @@
 
 - name: "verify : daemon.json"
   assert:
-    that: "[{% for key in daemon_json.keys() %}{% if key in daemon_json_allowed_keys %}True{% else %}, False{% endif %}{% endfor %}]"
+    that: "[{% for key in docker_daemon_json.keys() %}{% if key in daemon_json_allowed_keys %}True{% else %}, False{% endif %}{% endfor %}]"
     fail_msg: "Failed to check keys for daemon.json"
     success_msg: "root-level keys are valid"
+
+
+- name: "verify : values"
+  assert:
+    that:
+      - docker_release_channel in ["edge", "stable"]
+      - docker_type in ["ce", "ee"]
+    fail_msg: "Failed to verify values (docker_release_channel or docker_type)"
+    success_msg: "values are valid"
 
 
 - name: "install : system-wide packages"
@@ -20,7 +29,7 @@
     cache_valid_time: 3600
   register: task_result
   until: task_result is success
-  retries: 10
+  retries: 3
   delay: 2
 
 
@@ -29,37 +38,38 @@
     name: docker[tls]
   register: task_result
   until: task_result is success
-  retries: 10
+  retries: 3
   delay: 2
 
 
 - name: "import : apt_key"
   apt_key:
-    url: "{{ download_url }}/gpg"
+    url: "{{ docker_download_url }}/gpg"
   register: key
   until: key is success
-  retries: 10
+  retries: 3
   delay: 2
 
 
 - name: "import : apt_repo"
   apt_repository:
-    repo: "deb [arch=amd64] {{ download_url }} {{ ansible_distribution_release | lower }} {{ release_channel }}"
+    repo: "deb [arch=amd64] {{ docker_download_url }} {{ ansible_distribution_release | lower }} {{ docker_release_channel }}"
     filename: docker
   register: repo
   until: repo is success
-  retries: 10
+  retries: 3
   delay: 2
 
 
-- name: "install : docker-{{ type }}"
+- name: "install : docker-{{ docker_type }}"
   apt:
-    name: "docker-{{ type }}"
+    name: "docker-{{ docker_type }}{% if docker_version not in ['latest','present'] %}={{ docker_version }}{% endif %}"
     update_cache: "{% if key is changed or repo is changed %}yes{% else %}no{% endif %}"
     cache_valid_time: 3600
+    state: "{% if docker_version in ['latest','present'] %}{{ docker_version }}{% else %}{{ omit }}{% endif %}"
   register: task_result
   until: task_result is success
-  retries: 10
+  retries: 3
   delay: 2
 
 
@@ -67,18 +77,21 @@
   template:
     src: daemon.json.j2
     dest: /etc/docker/daemon.json
-  register: tpl_daemon
+  register: docker_tpl_daemon
 
 
 - name: "configure (re)start docker"
   systemd:
     name: docker.service
-    state: "{% if tpl_daemon is changed %}re{% endif %}started"
+    state: "{% if docker_tpl_daemon is changed %}re{% endif %}started"
 
 
-- name: "configure : registry"
+- name: "configure : registry (no_log: true)"
   docker_login:
-    registry: "{{ item.registry | default(omit) }}"
+    registry: "{{ item.registry | default('registry-1.docker.io') }}"
     username: "{{ item.username }}"
     password: "{{ item.password }}"
-  with_items: "{{ registry }}"
+  with_items: "{{ docker_registry }}"
+  retries: 3
+  delay: 2
+  no_log: true
