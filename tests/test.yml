@@ -1,5 +1,5 @@
 ---
-- hosts: localhost
+- hosts: docker
   remote_user: root
   roles:
     - egeneralov.docker

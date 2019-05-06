@@ -10,14 +10,64 @@ registry: []
 #     'password': 'egeneralov'
 #   }
 
-dns: []
-#   - 8.8.8.8
-#   - 1.1.1.1
-
-max_concurrent_downloads: 5
-max_concurrent_uploads: 5
-
-insecure_registries: []
-#  - registry.company.tld
-
-log_opts: {}
+daemon_json: {}
+#   dns: [
+#     "8.8.8.8", "1.1.1.1"
+#   ]
+#   dns-opts: []
+#   dns-search: []
+#   api-cors-header: ''
+#   authorization-plugins: []
+#   bip: ''
+#   bridge: ''
+#   cgroup-parent: ''
+#   cluster-advertise: ''
+#   cluster-store: ''
+#   cluster-store-opts: {}
+#   debug: true
+#   default-gateway: ''
+#   default-gateway-v6: ''
+#   default-runtime: runc
+#   disable-legacy-registry: false
+#   exec-opts: []
+#   exec-root: ''
+#   fixed-cidr: ''
+#   fixed-cidr-v6: ''
+#   graph: ''
+#   group: ''
+#   hosts: [
+#     'fd://', 'unix:///var/run/docker.sock',
+#     'tcp://0.0.0.0:2376'
+#   ]
+#   icc: true
+#   insecure-registries: []
+#   ip: 0.0.0.0
+#   ip-forward: false
+#   ip-masq: false
+#   iptables: true
+#   ipv6: false
+#   labels: []
+#   live-restore: true
+#   log-driver: ''
+#   log-level: ''
+#   log-opts: {}
+#   max-concurrent-downloads: 3
+#   max-concurrent-uploads: 5
+#   mtu: 0
+#   oom-score-adjust: -500
+#   pidfile: ''
+#   raw-logs: false
+#   registry-mirrors: []
+#   runtimes: {}
+#   selinux-enabled: false
+#   storage-driver: ''
+#   storage-opts: []
+#   swarm-default-advertise-addr: ''
+#   tls: true
+#   tlscacert: /etc/docker/tls/ca.pem
+#   tlscert: /etc/docker/tls/server-cert.pem
+#   tlskey: /etc/docker/tls/server-key.pem
+#   tlsverify: true
+#   userland-proxy: false
+#   userns-remap: ''
+# 	experimental: false,
