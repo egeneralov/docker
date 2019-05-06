@@ -2,14 +2,14 @@
 # tasks file for egeneralov.docker
 
 
-- name: Verify daemon.json
+- name: "verify : daemon.json"
   assert:
     that: "[{% for key in daemon_json.keys() %}{% if key in daemon_json_allowed_keys %}True{% else %}, False{% endif %}{% endfor %}]"
     fail_msg: "Failed to check keys for daemon.json"
     success_msg: "root-level keys are valid"
 
 
-- name: System-wide deps
+- name: "install : system-wide packages"
   apt:
     name:
       - ca-certificates
@@ -24,7 +24,7 @@
   delay: 2
 
 
-- name: import key
+- name: "import : apt_key"
   apt_key:
     url: "{{ download_url }}/gpg"
   register: key
@@ -33,9 +33,9 @@
   delay: 2
 
 
-- name: import repo
+- name: "import : apt_repo"
   apt_repository:
-    repo: "deb [arch=amd64] {{ download_url }} {{ ansible_distribution_release | lower }} stable"
+    repo: "deb [arch=amd64] {{ download_url }} {{ ansible_distribution_release | lower }} {{ release_channel }}"
     filename: docker
   register: repo
   until: repo is success
@@ -43,18 +43,17 @@
   delay: 2
 
 
-- name: "update_cache"
+- name: "cache : update"
   apt:
-    update_cache: yes
+    update_cache: "{% if key is changed or repo is changed %}yes{% else %}no{% endif %}"
     cache_valid_time: 3600
   register: task_result
   until: task_result is success
   retries: 10
   delay: 2
-  when: key is changed or repo is changed
 
 
-- name: "apt-get install -yq docker-ce"
+- name: "install : docker-ce"
   apt:
     name: docker-ce
   register: task_result
@@ -63,7 +62,7 @@
   delay: 2
 
 
-- name: install python library
+- name: "install : python library"
   pip:
     name: docker[tls]
   register: task_result
@@ -72,21 +71,20 @@
   delay: 2
 
 
-- name: daemon.json
+- name: "configure : daemon.json"
   template:
     src: daemon.json.j2
     dest: /etc/docker/daemon.json
-  register: daemon
+  register: tpl_daemon
 
 
-- name: restart docker if daemon.json is changed
+- name: "configure (re)start docker"
   systemd:
     name: docker.service
-    state: restarted
-  when: daemon is changed
+    state: "{% if tpl_daemon is changed %}re{% endif %}started"
 
 
-- name: Log in into registry
+- name: "configure : registry"
   docker_login:
     registry: "{{ item.registry }}"
     username: "{{ item.username }}"

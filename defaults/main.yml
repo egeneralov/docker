@@ -3,6 +3,11 @@
 
 download_url: "https://download.docker.com/linux/{{ ansible_distribution | lower }}"
 
+docker_type:
+
+# edge / stable
+release_channel: stable
+
 registry: []
 #   - {
 #     'url': 'registry-1.docker.io'
