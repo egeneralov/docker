@@ -10,10 +10,10 @@ registry: []
 #     'password': 'egeneralov'
 #   }
 
-daemon_json:
-  dns: [
-    "8.8.8.8", "1.1.1.1"
-  ]
+daemon_json: {}
+#   dns: [
+#     "8.8.8.8", "1.1.1.1"
+#   ]
 #   dns-opts: []
 #   dns-search: []
 #   api-cors-header: ''
