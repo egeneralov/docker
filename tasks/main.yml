@@ -2,9 +2,20 @@
 # tasks file for egeneralov.docker
 
 
+- name: Verify daemon.json
+  assert:
+    that: "[{% for key in daemon_json.keys() %}{% if key in daemon_json_allowed_keys %}True{% else %}, False{% endif %}{% endfor %}]"
+    fail_msg: "Failed to check keys for daemon.json"
+    success_msg: "root-level keys are valid"
+
+
 - name: System-wide deps
   apt:
-    name: ['ca-certificates', 'apt-transport-https', 'debian-archive-keyring', 'python-pip']
+    name:
+      - ca-certificates
+      - apt-transport-https
+      - debian-archive-keyring
+      - python-pip
     update_cache: yes
     cache_valid_time: 3600
   register: task_result
