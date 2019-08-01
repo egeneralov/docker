@@ -73,6 +73,13 @@
   delay: 2
 
 
+- name: "install : docker-compose"
+  get_url:
+    url: "https://github.com/docker/compose/releases/download/{{ docker_compose_version }}/docker-compose-{{ ansible_os_family }}-{{ ansible_architecture }}"
+    dest: "/usr/local/bin/docker-compose"
+    mode: a+x
+
+
 - name: "configure : daemon.json"
   template:
     src: daemon.json.j2
