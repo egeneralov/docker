@@ -12,7 +12,7 @@ install_git () {
 
 
 [ -z "$(which ansible)" ] && install_ansible
-[ -z "$(which ansible)" ] && install_git
+[ -z "$(which git)" ] && install_git
 
 
 ansible-pull \
