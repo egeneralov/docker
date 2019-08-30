@@ -1,6 +1,6 @@
 ---
 
-- hosts: docker
+- hosts: localhost
   vars:
     docker_version: 18.06.3~ce~3-0~debian
     docker_daemon_json:
