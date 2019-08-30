@@ -2,7 +2,7 @@
 
 - hosts: localhost
   vars:
-    docker_version: 18.06.3~ce~3-0~debian
+    docker_version: latest
     docker_daemon_json:
       log-driver: journald
       max-concurrent-downloads: 5
