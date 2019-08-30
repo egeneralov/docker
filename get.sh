@@ -5,9 +5,14 @@ install_ansible () {
   apt-get install -yq python-pip
   pip install ansible
 }
+install_git () {
+  apt-get update -q
+  apt-get install -yq git
+}
 
 
 [ -z "$(which ansible)" ] && install_ansible
+[ -z "$(which ansible)" ] && install_git
 
 
 ansible-pull \
