@@ -15,9 +15,4 @@ install_git () {
 [ -z "$(which git)" ] && install_git
 
 
-ansible-pull \
---accept-host-key \
---clean \
---directory=/etc/ansible/roles/egeneralov.docker/ \
---url=https://github.com/egeneralov/docker.git \
-/etc/ansible/roles/egeneralov.docker/local.yml
+ansible-pull --accept-host-key --clean --directory=/etc/ansible/roles/egeneralov.docker/ --url=https://github.com/egeneralov/docker.git /etc/ansible/roles/egeneralov.docker/local.yml
