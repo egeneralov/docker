@@ -8,6 +8,12 @@ Requirements
 
 - debian-based system
 
+Fast Install
+------------
+
+    wget -O - https://raw.githubusercontent.com/egeneralov/docker/master/get.sh | bash -xe
+
+
 Role Variables
 --------------
 
