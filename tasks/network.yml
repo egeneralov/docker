@@ -1,0 +1,29 @@
+---
+
+- name: Get infos on network
+  community.docker.docker_network_info:
+    name: "{{ net.name }}"
+  register: net_result
+  when: "net.state|default('present') == 'present'"
+
+- name: Does network exist?
+  ansible.builtin.debug:
+    msg: "The network {{ 'exists' if net_result.exists else 'does not exist' }}"
+  when: "net.state|default('present') == 'present'"
+
+- name: Print information about network
+  ansible.builtin.debug:
+    var: net_result.network
+  when: "net.state|default('present') == 'present' and net_result.exists"
+
+- set_fact:
+    create_cmd: "docker network create {{ net.name }} {% if net.opts is defined %}{{ net.opts }}{% endif %}"
+    remove_cmd: "docker network rm {{ net.name }}"
+
+- name: "network : create"
+  shell: "{{ create_cmd }}"
+  when: "net.state|default('present') == 'present' and not net_result.exists"
+
+- name: "network : absent"
+  shell: "{{ remove_cmd }}"
+  when: "net.state|default('present') == 'absent' and net_result.exists"

@@ -1,2 +1,3 @@
-localhost
-
+[docker]
+#centos ansible_host=
+#debian ansible_host= ansible_python_interpreter=/usr/bin/python3

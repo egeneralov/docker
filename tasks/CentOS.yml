@@ -1,0 +1,24 @@
+---
+
+- name: "import : repository"
+  get_url:
+    url: "https://download.docker.com/linux/{{ ansible_facts['distribution'] | lower }}/docker-{{ docker_type }}.repo"
+    dest: "/etc/yum.repos.d/docker-ce.repo"
+  register: task_result
+  until: task_result is success
+  retries: 3
+  delay: 2
+
+- name: "install : docker-{{ docker_type }}"
+  yum:
+    name: 
+      - "docker-{{ docker_type }}"
+      - "docker-{{ docker_type }}-cli"
+      - containerd.io
+      - python3-pip
+      - python3-setuptools
+    state: "{% if docker_version in ['latest','present','absent'] %}{{ docker_version }}{% else %}{{ omit }}{% endif %}"
+  register: task_result
+  until: task_result is success
+  retries: 3
+  delay: 2

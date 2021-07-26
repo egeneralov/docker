@@ -1,0 +1,30 @@
+---
+
+# https://docs.ansible.com/ansible/latest/collections/community/docker/docker_image_module.html
+
+- community.docker.docker_image:
+    api_version: "{{ img.api_version | default(omit) }}"
+    archive_path: "{{ img.api_version | default(omit) }}"
+    build: "{{ img.build | default(omit) }}"
+    ca_cert: "{{ img.ca_cert | default(omit) }}"
+    client_cert: "{{ img.client_cert | default(omit) }}"
+    client_key: "{{ img.client_key | default(omit) }}"
+    debug: "{{ img.debug | default(omit) }}"
+    docker_host: "{{ img.docker_host | default(omit) }}"
+    force_absent: "{{ img.force_absent | default(omit) }}"
+    force_source: "{{ img.force_source | default(omit) }}"
+    force_tag: "{{ img.force_tag | default(omit) }}"
+    load_path: "{{ img.load_path | default(omit) }}"
+    name: "{{ img.name | default(omit) }}"
+    pull: "{{ img.pull | default(omit) }}"
+    push: "{{ img.push | default(omit) }}"
+    repository: "{{ img.repository | default(omit) }}"
+    source: "{{ img.source | default(omit) }}"
+    ssl_version: "{{ img.ssl_version | default(omit) }}"
+    state: "{{ img.state | default(omit) }}"
+    tag: "{{ img.tag | default(omit) }}"
+    timeout: "{{ img.timeout | default(omit) }}"
+    tls: "{{ img.tls | default(omit) }}"
+    tls_hostname: "{{ img.tls_hostname | default(omit) }}"
+    use_ssh_client: "{{ img.use_ssh_client | default(omit) }}"
+    validate_certs: "{{ img.validate_certs | default(omit) }}"

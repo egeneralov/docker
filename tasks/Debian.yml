@@ -1,0 +1,45 @@
+---
+
+- name: "install : system-wide packages"
+  apt:
+    name:
+      - ca-certificates
+      - apt-transport-https
+      - debian-archive-keyring
+      - python3-pip
+      - python3-setuptools
+    update_cache: yes
+    cache_valid_time: 3600
+  register: task_result
+  until: task_result is success
+  retries: 3
+  delay: 2
+
+- name: "import : key"
+  apt_key:
+    url: "{{ docker_download_url }}/gpg"
+  register: key
+  until: key is success
+  retries: 3
+  delay: 2
+
+- name: "import : repository"
+  apt_repository:
+    repo: "deb [arch=amd64] {{ docker_download_url }} {{ ansible_distribution_release | lower }} {{ docker_release_channel }}"
+    filename: docker
+    state: "{% if docker_version in ['latest','present','absent'] %}{{ docker_version }}{% else %}{{ omit }}{% endif %}"
+  register: repo
+  until: repo is success
+  retries: 3
+  delay: 2
+
+- name: "install : docker-{{ docker_type }}"
+  apt:
+    name: "docker-{{ docker_type }}{% if docker_version not in ['latest','present'] %}={{ docker_version }}{% endif %}"
+    update_cache: "{% if key is changed or repo is changed %}yes{% else %}no{% endif %}"
+    cache_valid_time: 3600
+    state: "{% if docker_version in ['latest','present','absent'] %}{{ docker_version }}{% else %}{{ omit }}{% endif %}"
+  register: task_result
+  until: task_result is success
+  retries: 3
+  delay: 2

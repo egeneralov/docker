@@ -12,7 +12,6 @@ docker_version: present
 # docker_version: 5:18.09.5~3-0~debian-stretch
 # docker_version: 18.06.3~ce~3-0~debian
 # docker_version: latest
-docker_compose_version: 1.23.2
 
 docker_registry: []
 #   - url: 'registry-1.docker.io'
@@ -81,3 +80,28 @@ docker_daemon_json: {}
 #   userland-proxy: false
 #   userns-remap: ''
 # 	experimental: false,
+
+docker_networks: []
+# - name: zabbix
+#   state: present
+#   opts: "--subnet 192.168.29.0/24"
+docker_images: []
+# - name: nginx:stable-alpine
+#   source: pull
+# - name: redis
+#   source: pull
+docker_containers: []
+# - name: redis
+#   image: redis
+#   state: started
+#   ports:
+#     - 6379:6379
+#   volumes:
+#     - /tmp/redis:/data
+#   command: redis-server --appendonly yes
+# - name: nginx
+#   image: nginx:stable-alpine
+#   state: started
+#   network_mode: test
+#   ports:
+#     - 80:80

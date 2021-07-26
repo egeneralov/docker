@@ -1,8 +1,39 @@
 ---
+
 - hosts: docker
   vars:
-    docker_version: 18.06.3~ce~3-0~debian
     docker_daemon_json:
       log-driver: journald
+      max-concurrent-downloads: 10
+      max-concurrent-uploads: 10
+      experimental: true
+    docker_registry: []
+      # - url: 'registry-1.docker.io'
+      #   username: egeneralov
+      #   password: egeneralov
+    docker_networks:
+      - name: test
+        state: present
+        opts: "--subnet 192.168.31.0/24"
+    docker_images:
+      - name: nginx:stable-alpine
+        source: pull
+      - name: redis
+        source: pull
+    docker_containers:
+      - name: redis
+        image: redis
+        state: started
+        ports:
+          - 6379:6379
+        volumes:
+          - /tmp/redis:/data
+        command: redis-server --appendonly yes
+      - name: nginx
+        image: nginx:stable-alpine
+        state: started
+        network_mode: test
+        ports:
+          - 80:80
   roles:
     - egeneralov.docker

@@ -1,13 +1,13 @@
 ---
 # tasks file for egeneralov.docker
 
-
 - name: "verify : daemon.json"
   assert:
     that: "[{% for key in docker_daemon_json.keys() %}{% if key in daemon_json_allowed_keys %}True{% else %}, False{% endif %}{% endfor %}]"
     fail_msg: "Failed to check keys for daemon.json"
     success_msg: "root-level keys are valid"
-
+  tags:
+    - validate
 
 - name: "verify : values"
   assert:
@@ -16,83 +16,51 @@
       - docker_type in ["ce", "ee"]
     fail_msg: "Failed to verify values (docker_release_channel or docker_type)"
     success_msg: "values are valid"
+  tags:
+    - validate
 
+- include_tasks: "{{ ansible_facts['distribution'] }}.yml"
+  tags:
+    - install
 
-- name: "install : system-wide packages"
-  apt:
-    name:
-      - ca-certificates
-      - apt-transport-https
-      - debian-archive-keyring
-      - python-pip
-      - python-setuptools
-    update_cache: yes
-    cache_valid_time: 3600
-  register: task_result
-  until: task_result is success
-  retries: 3
-  delay: 2
+- name: "enshure : started/enabled dockerd"
+  systemd:
+    name: docker.service
+    state: started
+    enabled: true
+  tags:
+    - install
 
+# - name: Create pass with random 16 character password. If password exists just give the password
+#   ansible.builtin.debug:
+#     var: mypassword
+#   vars:
+#     mypassword: "{{ lookup('community.general.passwordstore', 'docker-credential-helpers/docker-pass-initialized-check create=true')}}"
 
 - name: "install : python library"
   pip:
-    name: docker[tls]
+    name: docker
   register: task_result
   until: task_result is success
   retries: 3
   delay: 2
-
-
-- name: "import : apt_key"
-  apt_key:
-    url: "{{ docker_download_url }}/gpg"
-  register: key
-  until: key is success
-  retries: 3
-  delay: 2
-
-
-- name: "import : apt_repo"
-  apt_repository:
-    repo: "deb [arch=amd64] {{ docker_download_url }} {{ ansible_distribution_release | lower }} {{ docker_release_channel }}"
-    filename: docker
-  register: repo
-  until: repo is success
-  retries: 3
-  delay: 2
-
-
-- name: "install : docker-{{ docker_type }}"
-  apt:
-    name: "docker-{{ docker_type }}{% if docker_version not in ['latest','present'] %}={{ docker_version }}{% endif %}"
-    update_cache: "{% if key is changed or repo is changed %}yes{% else %}no{% endif %}"
-    cache_valid_time: 3600
-    state: "{% if docker_version in ['latest','present'] %}{{ docker_version }}{% else %}{{ omit }}{% endif %}"
-  register: task_result
-  until: task_result is success
-  retries: 3
-  delay: 2
-
-
-- name: "install : docker-compose"
-  get_url:
-    url: "https://github.com/docker/compose/releases/download/{{ docker_compose_version }}/docker-compose-{{ ansible_system }}-{{ ansible_architecture }}"
-    dest: "/usr/local/bin/docker-compose"
-    mode: a+x
-
+  tags:
+    - install
 
 - name: "configure : daemon.json"
   template:
     src: daemon.json.j2
     dest: /etc/docker/daemon.json
   register: docker_tpl_daemon
-
+  tags:
+    - configure
 
 - name: "configure (re)start docker"
   systemd:
     name: docker.service
     state: "{% if docker_tpl_daemon is changed %}re{% endif %}started"
-
+  tags:
+    - configure
 
 - name: "configure : registry (no_log: true)"
   docker_login:
@@ -103,3 +71,32 @@
   retries: 3
   delay: 2
   no_log: true
+  tags:
+    - configure
+
+- include_tasks: "network.yml"
+  loop: "{{ docker_networks }}"
+  loop_control:
+    loop_var: net
+  tags:
+    - network
+
+- name: "configure : docker netns visibility"
+  ansible.builtin.file:
+    src: /var/run/docker/netns
+    dest: /var/run/netns
+    state: link
+
+- include_tasks: "images.yml"
+  loop: "{{ docker_images }}"
+  loop_control:
+    loop_var: img
+  tags:
+    - images
+
+- include_tasks: "containers.yml"
+  loop: "{{ docker_containers }}"
+  loop_control:
+    loop_var: c
+  tags:
+    - containers
