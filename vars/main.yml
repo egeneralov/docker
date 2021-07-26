@@ -68,4 +68,3 @@ daemon_json_allowed_keys:
   - node-generic-resources
   - runtimes
   - default-address-pools
-
