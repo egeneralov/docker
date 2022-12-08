@@ -81,11 +81,11 @@
   tags:
     - network
 
-- name: "configure : docker netns visibility"
-  ansible.builtin.file:
-    src: /var/run/docker/netns
-    dest: /var/run/netns
-    state: link
+# - name: "configure : docker netns visibility"
+#   ansible.builtin.file:
+#     src: /var/run/docker/netns
+#     dest: /var/run/netns
+#     state: link
 
 - include_tasks: "images.yml"
   loop: "{{ docker_images }}"
