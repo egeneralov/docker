@@ -35,7 +35,13 @@
 
 - name: "install : docker-{{ docker_type }}"
   apt:
-    name: "docker-{{ docker_type }}{% if docker_version not in ['latest','present'] %}={{ docker_version }}{% endif %}"
+    name:
+      # "docker-{{ docker_type }}{% if docker_version not in ['latest','present'] %}={{ docker_version }}{% endif %}"
+      - "docker-{{ docker_type }}{% if docker_version not in ['latest','present'] %}={{ docker_version }}{% endif %}"
+      - "docker-{{ docker_type }}-cli{% if docker_version not in ['latest','present'] %}={{ docker_version }}{% endif %}"
+      - "docker-{{ docker_type }}-rootless-extras{% if docker_version not in ['latest','present'] %}={{ docker_version }}{% endif %}"
+      - "docker-buildx-plugin"
+      - "docker-compose-plugin"
     update_cache: "{% if key is changed or repo is changed %}yes{% else %}no{% endif %}"
     cache_valid_time: 3600
     state: "{% if docker_version in ['latest','present','absent'] %}{{ docker_version }}{% else %}{{ omit }}{% endif %}"
