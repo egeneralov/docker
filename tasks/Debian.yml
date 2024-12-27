@@ -8,6 +8,7 @@
       - debian-archive-keyring
       - python3-pip
       - python3-setuptools
+      - python3-docker
     update_cache: yes
     cache_valid_time: 3600
   register: task_result

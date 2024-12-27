@@ -37,15 +37,15 @@
 #   vars:
 #     mypassword: "{{ lookup('community.general.passwordstore', 'docker-credential-helpers/docker-pass-initialized-check create=true')}}"
 
-- name: "install : python library"
-  pip:
-    name: docker
-  register: task_result
-  until: task_result is success
-  retries: 3
-  delay: 2
-  tags:
-    - install
+# - name: "install : python library"
+#   pip:
+#     name: docker
+#   register: task_result
+#   until: task_result is success
+#   retries: 3
+#   delay: 2
+#   tags:
+#     - install
 
 - name: "configure : daemon.json"
   template:
