@@ -27,7 +27,7 @@
   apt_repository:
     repo: "deb [arch=amd64] {{ docker_download_url }} {{ ansible_distribution_release | lower }} {{ docker_release_channel }}"
     filename: docker
-    state: "{% if docker_version in ['latest','present','absent'] %}{{ docker_version }}{% else %}{{ omit }}{% endif %}"
+    state: present
   register: repo
   until: repo is success
   retries: 3
